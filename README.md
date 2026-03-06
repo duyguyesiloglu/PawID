@@ -37,7 +37,7 @@ src/
 
 ## 👨‍💻 Geliştirici
 
-Adın Soyadın — [GitHub](https://github.com/duyguyesiloglu)
+Duygu Yesiloglu — [GitHub](https://github.com/duyguyesiloglu)
 
 ---
 
