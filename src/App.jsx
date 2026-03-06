@@ -3,8 +3,9 @@ import Navbar from "./components/Navbar"
 import HomePage from "./pages/HomePage"
 import DogProfilePage from "./pages/DogProfilePage"
 import DashboardPage from "./pages/DashboardPage"
-
+import LoginPage from "./pages/LoginPage"
 function App() {
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <Navbar />
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/dog/:id" element={<DogProfilePage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </div>
   )
