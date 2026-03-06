@@ -18,13 +18,6 @@ PawID, fiziksel bir NFC çip içeren epoksi köpek künyesiyle çalışan modern
 - [React Router](https://reactrouter.com/)
 - [Lucide React](https://lucide.dev/)
 
-## 📦 Kurulum
-```bash
-git clone https://github.com/KULLANICI_ADIN/pawid.git
-cd pawid
-npm install
-npm run dev
-```
 
 ## 📁 Klasör Yapısı
 ```
@@ -34,11 +27,5 @@ src/
 ├── hooks/        # Custom hooks
 └── utils/        # Yardımcı fonksiyonlar
 ```
-
-## 👨‍💻 Geliştirici
-
-Duygu Yesiloglu — [GitHub](https://github.com/duyguyesiloglu)
-
----
 
 > Bu proje geliştirme aşamasındadır. 🚧
