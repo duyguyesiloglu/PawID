@@ -3,6 +3,7 @@ export default {
   content: ["./index.html", "./src/**/*.{js,jsx}"],
   theme: {
     extend: {
+      
       colors: {
         epoxy: {
           clear:   "#F0F4FF",
@@ -14,7 +15,8 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
+        display: ["Fraunces", "serif"],
+         sans: ["DM Sans", "sans-serif"],
       },
     },
   },

@@ -7,34 +7,34 @@ export default function Navbar() {
   const links = [
     { label: "Ana Sayfa", href: "/" },
     { label: "Profil", href: "/profile" },
-    { label: "Nasıl Çalışır?", href: "/how-it-works" },
+    { label: "Nasıl Çalışır?", href: "#how" },
     { label: "İletişim", href: "/contact" },
   ];
 
   return (
     <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <nav className="w-full max-w-3xl rounded-2xl border border-white/40 bg-white/20 backdrop-blur-xl shadow-lg px-5 py-3">
+      <nav className="w-full max-w-3xl rounded-2xl border border-stone-200 bg-white/80 backdrop-blur-xl shadow-sm px-5 py-3">
 
-        {/* Üst satır: Logo + Linkler + Hamburger */}
+        {/* Üst satır */}
         <div className="flex items-center justify-between">
 
           {/* Logo */}
           <a href="/" className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-400 to-teal-400 flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-sm">🐾</span>
+            <div className="w-8 h-8 rounded-xl bg-stone-900 flex items-center justify-center">
+              <span className="text-white text-sm">🐾</span>
             </div>
-            <span className="font-bold text-lg text-slate-800 tracking-tight">
-              Paw<span className="text-blue-500">ID</span>
+            <span className="font-display font-light text-lg text-stone-900 tracking-tight">
+              Paw<span className="italic text-blue-400">ID</span>
             </span>
           </a>
 
           {/* Desktop Linkler */}
-          <ul className="hidden sm:flex items-center gap-1 list-none">
+          <ul className="hidden sm:flex items-center gap-1 list-none m-0 p-0">
             {links.map((link) => (
               <li key={link.label}>
                 <a
                   href={link.href}
-                  className="text-sm font-medium text-slate-700 px-3 py-1.5 rounded-xl hover:bg-blue-50 hover:text-blue-500 transition-colors"
+                  className="text-sm font-light text-stone-500 px-3 py-1.5 rounded-xl hover:text-stone-900 hover:bg-stone-100 transition-colors"
                 >
                   {link.label}
                 </a>
@@ -42,42 +42,42 @@ export default function Navbar() {
             ))}
             <li>
               <a
-                href="/scan"
-                className="text-sm font-semibold text-white px-4 py-1.5 rounded-xl bg-gradient-to-r from-blue-400 to-teal-400 shadow-md hover:opacity-90 transition-opacity"
+                href="/dashboard"
+                className="text-sm font-medium text-white px-4 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-700 transition-colors ml-2"
               >
-                NFC Tara 📱
+                Başla →
               </a>
             </li>
           </ul>
 
-          {/* Hamburger (mobil) */}
+          {/* Hamburger */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="sm:hidden p-1.5 rounded-xl text-slate-700 hover:bg-blue-50 transition-colors"
+            className="sm:hidden p-1.5 rounded-xl text-stone-500 hover:bg-stone-100 transition-colors"
           >
-            {isOpen ? <X size={22} /> : <Menu size={22} />}
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
         {/* Mobil Menü */}
         {isOpen && (
-          <div className="sm:hidden mt-3 flex flex-col gap-1 border-t border-white/40 pt-3">
+          <div className="sm:hidden mt-3 flex flex-col gap-1 border-t border-stone-100 pt-3">
             {links.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="text-sm font-medium text-slate-700 px-3 py-2 rounded-xl hover:bg-blue-50 hover:text-blue-500 transition-colors"
+                className="text-sm font-light text-stone-600 px-3 py-2 rounded-xl hover:bg-stone-100 hover:text-stone-900 transition-colors"
               >
                 {link.label}
               </a>
             ))}
             <a
-              href="/scan"
+              href="/dashboard"
               onClick={() => setIsOpen(false)}
-              className="text-sm font-semibold text-white text-center px-4 py-2 rounded-xl bg-gradient-to-r from-blue-400 to-teal-400 shadow-md mt-1"
+              className="text-sm font-medium text-white text-center px-4 py-2 rounded-xl bg-stone-900 mt-1"
             >
-              📱 NFC Tara
+              Başla →
             </a>
           </div>
         )}
