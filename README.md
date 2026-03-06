@@ -1,16 +1,44 @@
-# React + Vite
+# 🐾 PawID - Akıllı NFC Epoksi Köpek Künyesi
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+PawID, fiziksel bir NFC çip içeren epoksi köpek künyesiyle çalışan modern bir web uygulamasıdır. Künyeye telefon dokundurulduğunda köpeğin profili, sağlık bilgileri ve acil iletişim bilgileri anında açılır.
 
-Currently, two official plugins are available:
+## 🚀 Özellikler
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 📱 NFC ile anında profil açma
+- 🐕 Köpek profil sayfası (isim, cins, yaş, fotoğraf)
+- 🏥 Sağlık bilgileri (aşılar, alerjiler, veteriner)
+- 🆘 Acil durum butonu (sahip iletişim bilgileri)
+- 🌙 Modern ve şeffaf epoksi teması
 
-## React Compiler
+## 🛠️ Kullanılan Teknolojiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [React.js](https://reactjs.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React Router](https://reactrouter.com/)
+- [Lucide React](https://lucide.dev/)
 
-## Expanding the ESLint configuration
+## 📦 Kurulum
+```bash
+git clone https://github.com/KULLANICI_ADIN/pawid.git
+cd pawid
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📁 Klasör Yapısı
+```
+src/
+├── components/   # Tekrar kullanılan bileşenler
+├── pages/        # Sayfalar
+├── hooks/        # Custom hooks
+└── utils/        # Yardımcı fonksiyonlar
+```
+
+## 👨‍💻 Geliştirici
+
+Adın Soyadın — [GitHub](https://github.com/duyguyesiloglu)
+
+---
+
+> Bu proje geliştirme aşamasındadır. 🚧
