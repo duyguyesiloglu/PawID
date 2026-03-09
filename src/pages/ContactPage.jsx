@@ -32,7 +32,7 @@ export default function ContactPage() {
         {/* İletişim Kanalları */}
         <div className="flex flex-col gap-3 mb-6">
           <a
-            href="mailto:info@pawid.com"
+            href="mailto:info@pawtag-tr.com"
             className="bg-white border border-stone-200 rounded-2xl p-5 flex items-center gap-4 shadow-sm hover:border-stone-400 transition-colors"
           >
             <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center">
@@ -40,12 +40,12 @@ export default function ContactPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-stone-800">E-posta</p>
-              <p className="text-xs text-stone-400 font-light">info@pawid.com</p>
+              <p className="text-xs text-stone-400 font-light">info@pawtag-tr.com</p>
             </div>
           </a>
 
           <a
-            href="https://instagram.com/pawid"
+            href="https://instagram.com/pawtag-tr"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white border border-stone-200 rounded-2xl p-5 flex items-center gap-4 shadow-sm hover:border-stone-400 transition-colors"
@@ -55,7 +55,7 @@ export default function ContactPage() {
             </div>
             <div>
               <p className="text-sm font-medium text-stone-800">Instagram</p>
-              <p className="text-xs text-stone-400 font-light">@pawid</p>
+              <p className="text-xs text-stone-400 font-light">@pawtag-tr</p>
             </div>
           </a>
         </div>
@@ -65,8 +65,8 @@ export default function ContactPage() {
           <p className="text-xs font-medium tracking-widest uppercase text-stone-300">Mesaj Gönder</p>
 
           {[
-            { label: "Adın", key: "name", placeholder: "Duygu" },
-            { label: "E-posta", key: "email", placeholder: "duygu@email.com" },
+            { label: "Adın", key: "name", placeholder: "" },
+            { label: "E-posta", key: "email", placeholder: "user@email.com" },
           ].map((f) => (
             <div key={f.key} className="flex flex-col gap-1">
               <label className="text-xs font-medium text-stone-500">{f.label}</label>

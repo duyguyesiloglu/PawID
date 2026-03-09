@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { LogOut, AlertTriangle, CheckCircle, Camera, Save } from "lucide-react";
 
@@ -10,10 +10,10 @@ export default function DashboardPage() {
   const fileRef = useRef();
 
   const [currentUser, setCurrentUser] = useState(null);
+  const [dogId, setDogId] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
   const [dog, setDog] = useState({
     name: "",
@@ -35,9 +35,28 @@ export default function DashboardPage() {
         return;
       }
       setCurrentUser(user);
-      const docRef = doc(db, "dogs", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) setDog(docSnap.data());
+
+      // Önce bu kullanıcıya ait PAW kodunu bul
+      const q = query(collection(db, "dogs"), where("ownerId", "==", user.uid));
+      const snap = await getDocs(q);
+
+      if (!snap.empty) {
+        // PAW koduyla kayıtlı
+        const dogDoc = snap.docs[0];
+        setDogId(dogDoc.id);
+        setDog(dogDoc.data());
+      } else {
+        // UID ile kayıtlı (eski kayıtlar)
+        const docRef = doc(db, "dogs", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setDogId(user.uid);
+          setDog(docSnap.data());
+        } else {
+          setDogId(user.uid);
+        }
+      }
+
       setLoading(false);
     });
     return () => unsubscribe();
@@ -45,17 +64,13 @@ export default function DashboardPage() {
 
   const handleSave = async () => {
     setSaving(true);
-    await setDoc(doc(db, "dogs", currentUser.uid), dog);
+    const id = dogId || currentUser.uid;
+    await setDoc(doc(db, "dogs", id), { ...dog, ownerId: currentUser.uid });
     setSaving(false);
     setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
-
-  const handlePhoto = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    // Storage eklenince burası aktif olacak
-    setUploading(false);
+    setTimeout(() => {
+      navigate(`/dog/${id}`);
+    }, 1000);
   };
 
   const handleLogout = async () => {
@@ -79,6 +94,9 @@ export default function DashboardPage() {
         <div>
           <h1 className="font-display text-3xl font-light text-stone-900 tracking-tight">Dashboard</h1>
           <p className="text-stone-400 font-light text-sm mt-1">{currentUser?.email}</p>
+          {dogId && (
+            <p className="text-stone-300 font-light text-xs mt-0.5">Künye: {dogId}</p>
+          )}
         </div>
         <button
           onClick={handleLogout}
@@ -127,13 +145,12 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => fileRef.current.click()}
-              disabled={uploading}
-              className="flex items-center gap-2 bg-stone-100 text-stone-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-stone-200 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 bg-stone-100 text-stone-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-stone-200 transition-colors"
             >
               <Camera size={15} />
-              {uploading ? "Yükleniyor..." : "Fotoğraf Seç"}
+              Fotoğraf Seç
             </button>
-            <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+            <input ref={fileRef} type="file" accept="image/*" onChange={() => {}} className="hidden" />
           </div>
         </div>
 
@@ -203,7 +220,7 @@ export default function DashboardPage() {
           className="flex items-center justify-center gap-2 bg-stone-900 text-white py-4 rounded-2xl font-medium hover:bg-stone-700 transition-colors disabled:opacity-50"
         >
           <Save size={16} />
-          {saving ? "Kaydediliyor..." : saved ? "Kaydedildi" : "Kaydet"}
+          {saving ? "Kaydediliyor..." : saved ? "Kaydedildi ✓" : "Kaydet"}
         </button>
 
       </div>

@@ -1,24 +1,21 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
-      
-      colors: {
-        epoxy: {
-          clear:   "#F0F4FF",
-          frost:   "#E8EEFF",
-          deep:    "#1E2A4A",
-          accent:  "#6C8EFF",
-          amber:   "#FFB547",
-          success: "#4ECFA8",
-        },
-      },
       fontFamily: {
         display: ["Fraunces", "serif"],
-         sans: ["DM Sans", "sans-serif"],
+        sans: ["DM Sans", "sans-serif"],
+      },
+      colors: {
+        cream: "#F5EFE0",
+        bark: "#1A2E0F",
+        green: "#559632",
+        lightgreen: "#E8F0E0",
+        muted: "#8A9A7E",
+        blush: "#EDE3D0",
       },
     },
   },
   plugins: [],
-}
+};
