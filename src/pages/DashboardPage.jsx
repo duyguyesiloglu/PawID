@@ -1,20 +1,19 @@
 import { useState, useEffect, useRef } from "react";
-import { auth, db, storage } from "../firebase";
-import { signOut } from "firebase/auth";
+import { auth, db } from "../firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { LogOut, AlertTriangle, CheckCircle, Camera, Save } from "lucide-react";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const fileRef = useRef();
-  const user = auth.currentUser;
 
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const [dog, setDog] = useState({
     name: "",
@@ -29,40 +28,36 @@ export default function DashboardPage() {
     ownerPhone: "",
   });
 
-  // Firestore'dan veri çek
   useEffect(() => {
-    if (!user) { navigate("/login"); return; }
-    const fetchDog = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+      setCurrentUser(user);
       const docRef = doc(db, "dogs", user.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) setDog(docSnap.data());
       setLoading(false);
-    };
-    fetchDog();
-  }, [user, navigate]);
+    });
+    return () => unsubscribe();
+  }, []);
 
-  // Kaydet
   const handleSave = async () => {
     setSaving(true);
-    await setDoc(doc(db, "dogs", user.uid), dog);
+    await setDoc(doc(db, "dogs", currentUser.uid), dog);
     setSaving(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
 
-  // Fotoğraf yükle
   const handlePhoto = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setUploading(true);
-    const storageRef = ref(storage, `dogs/${user.uid}`);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    setDog({ ...dog, photo: url });
+    // Storage eklenince burası aktif olacak
     setUploading(false);
   };
 
-  // Çıkış
   const handleLogout = async () => {
     await signOut(auth);
     navigate("/login");
@@ -83,7 +78,7 @@ export default function DashboardPage() {
       <div className="max-w-lg mx-auto px-6 pt-12 mb-8 flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl font-light text-stone-900 tracking-tight">Dashboard</h1>
-          <p className="text-stone-400 font-light text-sm mt-1">{user?.email}</p>
+          <p className="text-stone-400 font-light text-sm mt-1">{currentUser?.email}</p>
         </div>
         <button
           onClick={handleLogout}
@@ -145,7 +140,6 @@ export default function DashboardPage() {
         {/* Köpek Bilgileri */}
         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <p className="text-xs font-medium tracking-widest uppercase text-stone-300">Köpek Bilgileri</p>
-
           {[
             { label: "İsim", key: "name", placeholder: "Karabaş" },
             { label: "Cins", key: "breed", placeholder: "Golden Retriever" },
@@ -166,7 +160,6 @@ export default function DashboardPage() {
         {/* Sağlık Bilgileri */}
         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <p className="text-xs font-medium tracking-widest uppercase text-stone-300">Sağlık</p>
-
           {[
             { label: "Aşılar (virgülle ayır)", key: "vaccines", placeholder: "Karma Aşı, Kuduz" },
             { label: "Alerjiler", key: "allergies", placeholder: "Tavuk eti" },
@@ -187,7 +180,6 @@ export default function DashboardPage() {
         {/* Sahip Bilgileri */}
         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <p className="text-xs font-medium tracking-widest uppercase text-stone-300">Sahip Bilgileri</p>
-
           {[
             { label: "Adın", key: "ownerName", placeholder: "Duygu Yeşiloğlu" },
             { label: "Telefon", key: "ownerPhone", placeholder: "+90 555 123 45 67" },
@@ -204,14 +196,14 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Kaydet Butonu */}
+        {/* Kaydet */}
         <button
           onClick={handleSave}
           disabled={saving}
           className="flex items-center justify-center gap-2 bg-stone-900 text-white py-4 rounded-2xl font-medium hover:bg-stone-700 transition-colors disabled:opacity-50"
         >
           <Save size={16} />
-          {saving ? "Kaydediliyor..." : saved ? "Kaydedildi ✓" : "Kaydet"}
+          {saving ? "Kaydediliyor..." : saved ? "Kaydedildi" : "Kaydet"}
         </button>
 
       </div>

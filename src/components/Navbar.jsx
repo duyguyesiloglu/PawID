@@ -5,11 +5,11 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const links = [
-    { label: "Ana Sayfa", href: "/" },
-    { label: "Profil", href: "/profile" },
-    { label: "Nasıl Çalışır?", href: "#how" },
-    { label: "İletişim", href: "/contact" },
-  ];
+  { label: "Ana Sayfa", href: "/" },
+  { label: "Hakkımızda", href: "/about" },
+  { label: "Nasıl Çalışır?", href: "/#how" },
+  { label: "İletişim", href: "/contact" },
+];
 
   return (
     <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
