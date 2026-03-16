@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@font-face {
+  font-family: 'CHIVAS';
+  src: url('/fonts/Caprasimo-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'COOKIE';
+  src: url('/fonts/Cookie-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'PEANUT';
+  src: url('/fonts/LuckiestGuy-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'TEDDY';
+  src: url('/fonts/Sniglet-ExtraBold.ttf') format('truetype');
+}

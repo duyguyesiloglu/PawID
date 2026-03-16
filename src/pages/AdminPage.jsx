@@ -1,178 +1,122 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react"; // useCallback ekledik
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, setDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { Plus, Copy, AlertTriangle, CheckCircle, User } from "lucide-react";
 
-// ⚠️ Buraya kendi e-posta adresini yaz
+import AdminStats from "../components/admin/AdminStats";
+import CodeGenerator from "../components/admin/CodeGenerator";
+import PetList from "../components/admin/PetList";
+import Loading from "../components/ui/Loading";
+
 const ADMIN_EMAIL = "duyguyess7@gmail.com";
-
-function generateCode() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "PAW-";
-  for (let i = 0; i < 4; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
-}
 
 export default function AdminPage() {
   const navigate = useNavigate();
-  const [dogs, setDogs] = useState([]);
+  const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(false);
   const [newCode, setNewCode] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
   const [copied, setCopied] = useState("");
+  const [mailSent, setMailSent] = useState({});
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (!currentUser) {
-        navigate("/login");
-        return;
-      }
-      console.log("Giriş yapan email:", currentUser.email);
-      fetchDogs();
-    });
-    
-    return () => unsubscribe();
+  // 1. Önce fonksiyonu tanımlıyoruz (Kırmızılığı önlemek için yukarı taşıdık)
+  const fetchPets = useCallback(async () => {
+    try {
+      const snap = await getDocs(collection(db, "pets"));
+      setPets(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (error) {
+      console.error("Veri çekme hatası:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const fetchDogs = async () => {
-    const snap = await getDocs(collection(db, "dogs"));
-    const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    setDogs(list);
-    setLoading(false);
-  };
+  // 2. Sonra useEffect içinde kullanıyoruz
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== ADMIN_EMAIL) {
+        setAuthError(true);
+        setLoading(false);
+        if (!user) navigate("/login");
+      } else {
+        fetchPets();
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate, fetchPets]); // Bağımlılıklara ekledik
 
   const handleGenerate = async () => {
-    const code = generateCode();
-    await setDoc(doc(db, "dogs", code), {
-      name: "",
-      breed: "",
-      age: "",
-      photo: "",
-      isLost: false,
-      vaccines: "",
-      allergies: "",
-      vet: "",
-      ownerName: "",
-      ownerPhone: "",
-      ownerId: "",
+    const code = `PAW-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    await setDoc(doc(db, "pets", code), {
       activated: false,
+      customerEmail,
       createdAt: new Date().toISOString(),
+      isLost: false
     });
     setNewCode(code);
-    fetchDogs();
+    fetchPets(); // Kod üretince listeyi tazele
   };
 
-  const handleCopy = (code) => {
-    navigator.clipboard.writeText(`https://pawid.com/activate/${code}`);
-    setCopied(code);
+  const handleCopy = (id) => {
+    navigator.clipboard.writeText(`https://pawtag-tr.com/activate/${id}`);
+    setCopied(id);
     setTimeout(() => setCopied(""), 2000);
   };
 
-  const activated = dogs.filter((d) => d.name);
-  const lost = dogs.filter((d) => d.isLost);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <p className="text-stone-400 font-light">Yükleniyor...</p>
-      </div>
+  const handleMailto = (code, email) => {
+    const activationLink = `https://pawtag-tr.com/activate/${code}`;
+    const subject = encodeURIComponent("PawTag Künyeniz Hazır! 🐾");
+    const body = encodeURIComponent(
+      `Merhaba,\n\nPawTag siparişiniz hazırlandı! Künyenizi aktif etmek için aşağıdaki bağlantıya tıklayarak dostunuzun profilini oluşturabilirsiniz:\n\n👉 ${activationLink}\n\nSevgiler,\nPawTag Ekibi`
     );
-  }
+    window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+    setMailSent((prev) => ({ ...prev, [code]: true }));
+  };
+
+  if (loading) return <Loading />;
+  if (authError) return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-10 text-center">
+      <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+        <p className="text-3xl mb-4">🔒</p>
+        <p className="text-gray-900 font-medium">Erişim Yetkiniz Yok</p>
+        <p className="text-gray-400 text-sm mt-1">Bu sayfa sadece yönetici erişimine açıktır.</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="bg-stone-50 min-h-screen font-sans pb-16">
+    <div className="bg-gray-50 min-h-screen pb-16 font-sans">
       <div className="max-w-2xl mx-auto px-6 pt-12">
+        <header className="mb-8">
+          <h1 className="text-3xl font-light text-gray-900 tracking-tight">Admin Paneli</h1>
+          <p className="text-gray-400 text-sm mt-1">Sistem Genel Özeti</p>
+        </header>
+        
+        <AdminStats 
+          total={pets.length} 
+          active={pets.filter(p => p.name).length} 
+          lost={pets.filter(p => p.isLost).length} 
+        />
 
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="font-display text-3xl font-light text-stone-900 tracking-tight">Admin Paneli</h1>
-          <p className="text-stone-400 font-light text-sm mt-1">{auth.currentUser?.email}</p>
-        </div>
+        <CodeGenerator 
+          customerEmail={customerEmail}
+          setCustomerEmail={setCustomerEmail}
+          handleGenerate={handleGenerate}
+          newCode={newCode}
+          handleCopy={handleCopy}
+          copied={copied}
+          mailSent={mailSent}
+          handleMailto={handleMailto} 
+        />
 
-        {/* İstatistikler */}
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          {[
-            { label: "Toplam Künye", value: dogs.length, color: "text-stone-900" },
-            { label: "Aktif", value: activated.length, color: "text-green-500" },
-            { label: "Kayıp", value: lost.length, color: "text-red-500" },
-          ].map((s) => (
-            <div key={s.label} className="bg-white border border-stone-200 rounded-2xl p-4 text-center shadow-sm">
-              <p className={`text-2xl font-display font-light ${s.color}`}>{s.value}</p>
-              <p className="text-stone-400 text-xs font-light mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Yeni Kod Üret */}
-        <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-6 shadow-sm">
-          <p className="text-xs font-medium tracking-widest uppercase text-stone-300 mb-4">Yeni Künye</p>
-          <button
-            onClick={handleGenerate}
-            className="flex items-center gap-2 bg-stone-900 text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-stone-700 transition-colors"
-          >
-            <Plus size={16} />
-            Kod Üret
-          </button>
-
-          {newCode && (
-            <div className="mt-4 bg-stone-50 border border-stone-200 rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <p className="font-display text-lg text-stone-900">{newCode}</p>
-                <p className="text-stone-400 text-xs font-light">pawid.com/activate/{newCode}</p>
-              </div>
-              <button
-                onClick={() => handleCopy(newCode)}
-                className="flex items-center gap-2 bg-stone-900 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-stone-700 transition-colors"
-              >
-                <Copy size={14} />
-                {copied === newCode ? "Kopyalandı ✓" : "Linki Kopyala"}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Künye Listesi */}
-        <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm">
-          <p className="text-xs font-medium tracking-widest uppercase text-stone-300 mb-4">
-            Tüm Künyeler ({dogs.length})
-          </p>
-          <div className="flex flex-col">
-            {dogs.map((dog) => (
-              <div key={dog.id} className="flex items-center justify-between py-3 border-b border-stone-100 last:border-0">
-                <div className="flex items-center gap-3">
-                  {dog.isLost ? (
-                    <AlertTriangle size={16} className="text-red-400" />
-                  ) : dog.name ? (
-                    <CheckCircle size={16} className="text-green-400" />
-                  ) : (
-                    <div className="w-4 h-4 rounded-full border-2 border-stone-200" />
-                  )}
-                  <div>
-                    <p className="text-sm font-medium text-stone-800">{dog.id}</p>
-                    {dog.name ? (
-                      <p className="text-xs text-stone-400 font-light flex items-center gap-1">
-                        <User size={10} />
-                        {dog.name} · {dog.ownerName || "—"}
-                      </p>
-                    ) : (
-                      <p className="text-xs text-stone-300 font-light">Henüz aktif değil</p>
-                    )}
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleCopy(dog.id)}
-                  className="text-xs text-stone-400 hover:text-stone-700 transition-colors"
-                >
-                  {copied === dog.id ? "Kopyalandı ✓" : "Linki Kopyala"}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
+        <PetList 
+          pets={pets} 
+          copied={copied} 
+          handleCopy={handleCopy} 
+          handleMailto={handleMailto} 
+        />
       </div>
     </div>
   );

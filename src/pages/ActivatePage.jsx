@@ -10,14 +10,12 @@ export default function ActivatePage() {
 
   useEffect(() => {
     const check = async () => {
-      const docRef = doc(db, "dogs", id);
+      const docRef = doc(db, "pets", id);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists() && docSnap.data().name) {
-        // Künye aktif → profil sayfasına git
-        navigate(`/dog/${id}`);
+        navigate(`/pet/${id}`);
       } else {
-        // Künye aktif değil → kayıt sayfasına yönlendir
         setChecking(false);
       }
     };
@@ -26,53 +24,49 @@ export default function ActivatePage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <p className="text-stone-400 font-light">Yükleniyor...</p>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Yükleniyor...</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-stone-50 min-h-screen font-sans flex items-center justify-center px-6">
+    <div className="bg-white min-h-screen font-sans flex items-center justify-center px-6">
       <div className="w-full max-w-sm text-center">
 
-        {/* İkon */}
-        <div className="w-20 h-20 rounded-3xl bg-stone-900 flex items-center justify-center mx-auto mb-8">
+        <div className="w-20 h-20 rounded-3xl bg-black flex items-center justify-center mx-auto mb-8">
           <span className="text-4xl">🐾</span>
         </div>
 
-        {/* Başlık */}
-        <h1 className="font-display text-3xl font-light text-stone-900 tracking-tight mb-3">
+        <h1 className="text-3xl font-light text-gray-900 tracking-tight mb-3">
           Künyeni aktifleştir
         </h1>
-        <p className="text-stone-400 font-light text-sm leading-relaxed mb-10">
-          Bu künye henüz aktif değil. Hesap oluşturarak köpeğinin profilini oluşturabilirsin.
+        <p className="text-gray-400 text-sm leading-relaxed mb-10">
+          Bu künye henüz aktif değil. Hesap oluşturarak hayvanının profilini oluşturabilirsin.
         </p>
 
-        {/* Adımlar */}
-        <div className="bg-white border border-stone-200 rounded-2xl p-6 mb-6 text-left flex flex-col gap-4 shadow-sm">
+        <div className="bg-gray-50 rounded-2xl p-6 mb-6 text-left flex flex-col gap-4">
           {[
             { num: "01", text: "Hesap oluştur" },
-            { num: "02", text: "Köpeğinin bilgilerini doldur" },
+            { num: "02", text: "Hayvanının bilgilerini doldur" },
             { num: "03", text: "Künye hazır! 🎉" },
           ].map((s) => (
             <div key={s.num} className="flex items-center gap-4">
-              <span className="font-display text-xl font-light text-stone-200">{s.num}</span>
-              <span className="text-sm text-stone-600 font-light">{s.text}</span>
+              <span className="text-xl font-light text-gray-200">{s.num}</span>
+              <span className="text-sm text-gray-600">{s.text}</span>
             </div>
           ))}
         </div>
 
-        {/* Buton */}
         <a
           href={`/register?code=${id}`}
-          className="block bg-stone-900 text-white py-4 rounded-2xl font-medium text-sm hover:bg-stone-700 transition-colors"
+          className="block bg-black text-white py-4 rounded-2xl font-medium text-sm hover:bg-gray-800 transition-colors"
         >
           Başla →
         </a>
 
-        <p className="text-stone-300 text-xs font-light mt-6">
-          🐾 PawID · Akıllı NFC Köpek Künyesi
+        <p className="text-gray-300 text-xs mt-6">
+          🐾 PawTag · Akıllı NFC Evcil Hayvan Künyesi
         </p>
 
       </div>
