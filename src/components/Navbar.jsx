@@ -28,7 +28,6 @@ export default function Navbar() {
     { label: "Ana Sayfa", href: "/" },
     { label: "Ürünler", href: "/products" },
     { label: "Hakkımızda", href: "/about" },
-    { label: "İletişim", href: "/contact" },
   ];
 
   const handleLogout = () => {

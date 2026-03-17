@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom"
 import Navbar from "./components/Navbar"
-import Footer from "./components/Footer" // ⬅️ Footer'ı import ettik
+import Footer from "./components/Footer" 
 import HomePage from "./pages/HomePage"
 import PetProfilePage from "./pages/PetProfilePage"
 import DashboardPage from "./pages/DashboardPage"
@@ -9,7 +9,6 @@ import ActivatePage from "./pages/ActivatePage"
 import RegisterPage from "./pages/RegisterPage"
 import AdminPage from "./pages/AdminPage"
 import AboutPage from "./pages/AboutPage"
-import ContactPage from "./pages/ContactPage"
 import ProductsPage from "./pages/ProductsPage";
 
 function App() {
@@ -20,6 +19,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/pet/:id" element={<PetProfilePage />} />
+          <Route path="/dog/:id" element={<PetProfilePage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -27,6 +27,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/about" element={<AboutPage />} />
+           
         </Routes>
       </main>
 
